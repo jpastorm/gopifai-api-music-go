@@ -2,12 +2,11 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/hajimehoshi/go-mp3"
 	"github.com/labstack/echo"
 	"os"
-	"strconv"
 	"wopifai/src/apihelpers"
 	"wopifai/src/resources"
+	"strconv"
 )
 
 func GetDir(c echo.Context) error{
@@ -47,16 +46,14 @@ func GetTrack(c echo.Context) error {
 	}
 	defer f.Close()
 
-	d, err := mp3.NewDecoder(f)
+	fi, err := f.Stat()
 	if err != nil {
 		return err
 	}
 
-	length := strconv.FormatInt(d.Length(),10)
-	resources.Get_Track(path)
 	c.Response().Header().Set("Content-type","audio/mpeg")
 
-	c.Response().Header().Set("Content-length",length)
+	c.Response().Header().Set("Content-length", strconv.FormatInt(fi.Size(),10))
 
 	return c.Stream(200,"audio/mpeg", f)
 }
