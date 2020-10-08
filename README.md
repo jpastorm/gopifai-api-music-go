@@ -1,2 +1,3 @@
 # GOPIFAI-api-music-go
- an api that reads music from local files
+ An API that reads music from local files
+,here go language is used. 
