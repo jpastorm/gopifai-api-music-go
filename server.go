@@ -1,9 +1,11 @@
 package main
 
 import (
+	"net/http"
+	"wopifai/src/routes"
+
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"wopifai/src/routes"
 )
 
 func main() {
@@ -13,6 +15,10 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	}))
 	// Routes
 	routes.SetUpRoutes(e)
 

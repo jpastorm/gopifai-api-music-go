@@ -2,40 +2,43 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/labstack/echo"
 	"os"
+	"strconv"
 	"wopifai/src/apihelpers"
 	"wopifai/src/resources"
-	"strconv"
+
+	"github.com/labstack/echo"
 )
 
-func GetDir(c echo.Context) error{
+func GetDir(c echo.Context) error {
 	var data []resources.Explorer
 	var response apihelpers.ResponseLibraries
-	if	c.QueryParam("path")=="" {
+	if c.QueryParam("path") == "" {
 		return c.JSON(404, "Query incorrecto")
 	}
-	path := c.QueryParam("path")
-	data = resources.List_Dir(path)
+	path, _ := os.Getwd()
+	//path := c.QueryParam("path")
+	fmt.Println(path + "/musica")
+	data = resources.List_Dir(path + "/musica")
 	fmt.Println("Respuesta")
 	fmt.Println(data)
-	response = apihelpers.ResponseLibraries{Status: 200,Message: "Con exito",Data: data}
+	response = apihelpers.ResponseLibraries{Status: 200, Message: "Con exito", Data: data}
 	return c.JSON(200, response)
 }
 
 func GetCover(c echo.Context) error {
 
-	if	c.QueryParam("path")=="" {
+	if c.QueryParam("path") == "" {
 		return c.JSON(404, "Query incorrecto")
 	}
 	path := c.QueryParam("path")
 
-	response,mime := resources.Get_Cover(path)
-	return c.Blob(200,mime, response)
+	response, mime := resources.Get_Cover(path)
+	return c.Blob(200, mime, response)
 }
 
 func GetTrack(c echo.Context) error {
-	if	c.QueryParam("path")=="" {
+	if c.QueryParam("path") == "" {
 		return c.JSON(404, "Query incorrecto")
 	}
 
@@ -51,9 +54,9 @@ func GetTrack(c echo.Context) error {
 		return err
 	}
 
-	c.Response().Header().Set("Content-type","audio/mpeg")
+	c.Response().Header().Set("Content-type", "audio/mpeg")
 
-	c.Response().Header().Set("Content-length", strconv.FormatInt(fi.Size(),10))
+	c.Response().Header().Set("Content-length", strconv.FormatInt(fi.Size(), 10))
 
-	return c.Stream(200,"audio/mpeg", f)
+	return c.Stream(200, "audio/mpeg", f)
 }
